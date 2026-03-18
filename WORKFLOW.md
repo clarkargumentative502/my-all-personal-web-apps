@@ -156,6 +156,9 @@ Jadi, setelah pilih **Create file:**
 ide → AI → dokumentasi → coding → upload
 ```
 
+Langkah berikutnya?
+Kita bikin jadi live.
+
 ---
 
 ## Part 2 — Gimana caranya bikin web app jadi live (langsung dari smartphone)?
