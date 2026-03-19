@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Znippetmep - Manage your code snippets and CLI commands">
+    <title>Znippetmep - Code Snippet Manager</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <h1 class="logo">🗂️ Znippetmep</h1>
+            <div class="header-actions">
+                <button class="btn-icon" id="btnToggleMode" aria-label="Toggle view mode">
+                    <span class="icon">📋</span>
+                </button>
+                <button class="btn-primary" id="btnAdd" aria-label="Add new snippet">
+                    + Tambah Snippet
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Search & Filter Bar -->
+    <section class="search-bar">
+        <div class="search-container">
+            <div class="search-input-wrapper">
+                <span class="search-icon">🔍</span>
+                <input 
+                    type="text" 
+                    id="searchInput" 
+                    class="search-input" 
+                    placeholder="Cari snippet..."
+                    aria-label="Search snippets"
+                >
+            </div>
+            <div class="filter-group">
+                <select id="filterCategory" class="filter-select" aria-label="Filter by category">
+                    <option value="">Semua Kategori</option>
+                    <option value="git">Git</option>
+                    <option value="npm">NPM</option>
+                    <option value="docker">Docker</option>
+                    <option value="linux">Linux</option>
+                    <option value="javascript">JavaScript</option>
+                    <option value="css">CSS</option>
+                    <option value="other">Lainnya</option>
+                </select>
+                <button class="btn-filter" id="btnFilterFavorite" aria-label="Show favorites only">
+                    ⭐ Favorit
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+        <!-- List Mode View -->
+        <section id="listView" class="list-view">
+            <div class="snippets-grid" id="snippetsContainer">
+                <!-- Snippets will be rendered here -->
+            </div>
+            <div class="empty-state" id="emptyState">
+                <div class="empty-icon">📝</div>
+                <h2>Belum ada snippet</h2>
+                <p>Mulai tambahkan snippet atau CLI command pertamamu!</p>
+                <button class="btn-primary" onclick="document.getElementById('btnAdd').click()">
+                    + Tambah Snippet
+                </button>
+            </div>
+        </section>
+
+        <!-- Flow Mode View -->
+        <section id="flowView" class="flow-view" style="display: none;">
+            <div class="flow-controls">
+                <button class="btn-icon" id="btnResetZoom" aria-label="Reset zoom">
+                    🔄 Reset View
+                </button>
+                <div class="flow-info">
+                    <span id="flowCount">0 snippet</span>
+                </div>
+            </div>
+            <canvas id="flowCanvas" class="flow-canvas"></canvas>
+            <div class="flow-empty" id="flowEmptyState">
+                <div class="empty-icon">🧠</div>
+                <h2>Flow Mode</h2>
+                <p>Tambahkan relasi antar snippet untuk melihat visualisasi flow</p>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal: Add/Edit Snippet -->
+    <div class="modal" id="modalSnippet" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
+        <div class="modal-overlay" id="modalOverlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Tambah Snippet</h2>
+                <button class="btn-close" id="btnCloseModal" aria-label="Close modal">×</button>
+            </div>
+            <form id="formSnippet" class="modal-body">
+                <div class="form-group">
+                    <label for="inputTitle" class="form-label">Judul *</label>
+                    <input 
+                        type="text" 
+                        id="inputTitle" 
+                        class="form-input" 
+                        placeholder="e.g., Git Commit Command"
+                        required
+                        autocomplete="off"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="inputContent" class="form-label">Isi Snippet *</label>
+                    <textarea 
+                        id="inputContent" 
+                        class="form-textarea" 
+                        rows="6"
+                        placeholder="git commit -m 'message'"
+                        required
+                    ></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="inputCategory" class="form-label">Kategori</label>
+                        <select id="inputCategory" class="form-select">
+                            <option value="git">Git</option>
+                            <option value="npm">NPM</option>
+                            <option value="docker">Docker</option>
+                            <option value="linux">Linux</option>
+                            <option value="javascript">JavaScript</option>
+                            <option value="css">CSS</option>
+                            <option value="other">Lainnya</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="inputTags" class="form-label">Tags (pisahkan dengan koma)</label>
+                        <input 
+                            type="text" 
+                            id="inputTags" 
+                            class="form-input" 
+                            placeholder="git, commit, command"
+                            autocomplete="off"
+                        >
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="inputConnections" class="form-label">Hubungkan dengan Snippet</label>
+                    <select id="inputConnections" class="form-select" multiple size="3">
+                        <option value="">-- Tidak ada relasi --</option>
+                    </select>
+                    <small class="form-help">Ctrl/Cmd + klik untuk pilih beberapa</small>
+                </div>
+
+                <input type="hidden" id="inputId">
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" id="btnCancel">Batal</button>
+                    <button type="submit" class="btn-primary" id="btnSave">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Detail Snippet -->
+    <div class="modal" id="modalDetail" role="dialog" aria-hidden="true">
+        <div class="modal-overlay" id="modalDetailOverlay"></div>
+        <div class="modal-content modal-detail">
+            <div class="modal-header">
+                <h2 id="detailTitle"></h2>
+                <button class="btn-close" id="btnCloseDetail" aria-label="Close">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="detail-meta">
+                    <span class="detail-category" id="detailCategory"></span>
+                    <span class="detail-date" id="detailDate"></span>
+                </div>
+                <div class="detail-tags" id="detailTags"></div>
+                <div class="detail-content-wrapper">
+                    <pre class="detail-content" id="detailContent"></pre>
+                    <button class="btn-copy-large" id="btnCopyDetail">
+                        📋 Copy
+                    </button>
+                </div>
+                <div class="detail-connections" id="detailConnections"></div>
+                <div class="detail-actions">
+                    <button class="btn-icon" id="btnEditDetail">
+                        ✏️ Edit
+                    </button>
+                    <button class="btn-icon btn-danger" id="btnDeleteDetail">
+                        🗑️ Hapus
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast" role="alert" aria-live="polite">
+        <span id="toastMessage"></span>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
