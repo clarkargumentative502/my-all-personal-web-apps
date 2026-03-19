@@ -216,6 +216,50 @@ Lalu klik **Deploy**
 
 ---
 
+### 💡 Tips (Opsional)
+
+Jika kita mau mendeploy tools ini langsung dari dalam **root directory (./)**, kita harus sedikit memodifikasi HTML untuk mengubah path ke file CSS & JS menggunakan **absolute path** (relative-to-root/subfolder), bukan relative path default buatan milik Claude app.
+
+Hal ini penting untuk menghindari Vercel mengalami bug saat routing atau ketika halaman diakses dari path yang berbeda.
+
+#### ❌ Tag di index.html yang berpotensi error adalah seperti ini:
+
+```html
+<link rel="stylesheet" href="style.css">
+<script src="script.js"></script>
+```
+
+Jadi, jika kita tetap mau mendeploy tools ini langsung dari dalam **root directory**
+
+Yaitu contoh yang tidak kita pakai:
+
+```
+Root Directory: ./
+```
+
+#### ✅ Edit tag di index.html menjadi seperti ini:
+
+```html
+<link rel="stylesheet" href="../my-1st-tools/style.css">
+<script src="../my-1st-tools/script.js"></script>
+```
+
+**Kenapa?**
+
+Karenan jika kita tetap mau mendeploy menggunakan **root directory (./)**, browser bisa salah resolve path saat kita hanya menggunakan relative path biasa, terutama ketika berpindah halaman atau menggunakan routing. Dengan menggunakan **absolute path** pada tag yang di-edit di atas, kita memastikan file CSS & JS tetap bisa diakses dengan benar dari berbagai level URL.
+
+**Namun pada tutorial kali ini, kita tidak akan menerapkan tips (opsional) di atas**.
+
+**Kembali ke contoh yang kita pakai:**
+
+```
+Root Directory: my-1st-tools/
+```
+
+Sudah klik **Deploy**?
+
+---
+
 ### 8. Hasilnya?
 
 - Kita langsung dapat **link**!
