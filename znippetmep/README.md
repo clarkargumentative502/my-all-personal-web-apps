@@ -30,11 +30,13 @@ Znippetmep adalah Web App sederhana berbasis Vanilla JavaScript untuk menyimpan,
 
 ## 📁 Struktur Project
 
+```
 znippetmep/
 │
 ├── index.html
 ├── style.css
 └── app.js
+```
 
 ---
 
@@ -60,6 +62,7 @@ znippetmep/
   connections: ["id_lain"],
   createdAt: 123456789
 }
+```
 
 
 ---
