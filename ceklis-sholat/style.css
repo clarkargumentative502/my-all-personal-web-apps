@@ -1,77 +1,602 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+/* ===========================
+   RESET & BASE STYLES
+   =========================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
 body {
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.5;
+    min-height: 100vh;
+    padding-bottom: 80px;
     transition: background-color 0.3s, color 0.3s;
 }
 
-.glass-card {
+/* ===========================
+   LIGHT THEME (DEFAULT)
+   =========================== */
+
+.light-theme {
+    background-color: #f9fafb;
+    color: #0f172a;
+}
+
+.light-theme .glass-card {
     background: rgba(255, 255, 255, 0.9);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.dark .glass-card {
+.light-theme .header-date {
+    color: #64748b;
+}
+
+.light-theme .theme-toggle {
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    color: #0f172a;
+}
+
+.light-theme .progress-ring-bg {
+    stroke: #e2e8f0;
+}
+
+.light-theme .progress-ring-fill {
+    stroke: #2563eb;
+}
+
+.light-theme .progress-subtitle {
+    color: #64748b;
+}
+
+.light-theme .prayer-card {
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.light-theme .prayer-button {
+    background-color: #f1f5f9;
+    color: #94a3b8;
+}
+
+.light-theme .prayer-button.done {
+    background-color: #2563eb;
+    color: #ffffff;
+    box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.4);
+}
+
+.light-theme .prayer-name {
+    color: #1e293b;
+}
+
+.light-theme .jamaah-button {
+    color: #cbd5e1;
+}
+
+.light-theme .jamaah-button.active {
+    background-color: #d1fae5;
+    color: #059669;
+}
+
+.light-theme .quote-box {
+    background-color: #eff6ff;
+    border: 1px solid #dbeafe;
+    color: #1e40af;
+}
+
+.light-theme .reset-button {
+    color: #94a3b8;
+}
+
+.light-theme .reset-button:hover {
+    color: #ef4444;
+}
+
+.light-theme .bottom-nav {
+    background: rgba(255, 255, 255, 0.9);
+    border-top: 1px solid #e2e8f0;
+}
+
+.light-theme .nav-item {
+    color: #94a3b8;
+}
+
+.light-theme .nav-item.active {
+    color: #2563eb;
+}
+
+.light-theme .toast {
+    background-color: #1e293b;
+    color: #ffffff;
+}
+
+.light-theme .prayer-disabled .prayer-button {
+    background-color: #cbd5e1 !important;
+    color: #94a3b8 !important;
+    box-shadow: none !important;
+}
+
+/* ===========================
+   DARK THEME
+   =========================== */
+
+.dark-theme {
+    background-color: #020617;
+    color: #f1f5f9;
+}
+
+.dark-theme .glass-card {
+    background: rgba(30, 41, 59, 0.8);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dark-theme .header-date {
+    color: #94a3b8;
+}
+
+.dark-theme .theme-toggle {
+    background-color: #1e293b;
+    border: 1px solid #334155;
+    color: #f1f5f9;
+}
+
+.dark-theme .progress-ring-bg {
+    stroke: #1e293b;
+}
+
+.dark-theme .progress-ring-fill {
+    stroke: #2563eb;
+}
+
+.dark-theme .progress-subtitle {
+    color: #94a3b8;
+}
+
+.dark-theme .prayer-card {
     background: rgba(30, 41, 59, 0.8);
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.progress-ring {
+.dark-theme .prayer-button {
+    background-color: #1e293b;
+    color: #94a3b8;
+}
+
+.dark-theme .prayer-button.done {
+    background-color: #2563eb;
+    color: #ffffff;
+    box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.4);
+}
+
+.dark-theme .prayer-name {
+    color: #f1f5f9;
+}
+
+.dark-theme .jamaah-button {
+    color: #334155;
+}
+
+.dark-theme .jamaah-button.active {
+    background-color: rgba(5, 150, 105, 0.3);
+    color: #059669;
+}
+
+.dark-theme .quote-box {
+    background-color: rgba(30, 58, 138, 0.2);
+    border: 1px solid #1e3a8a;
+    color: #93c5fd;
+}
+
+.dark-theme .reset-button {
+    color: #94a3b8;
+}
+
+.dark-theme .reset-button:hover {
+    color: #ef4444;
+}
+
+.dark-theme .bottom-nav {
+    background: rgba(30, 41, 59, 0.8);
+    border-top: 1px solid #1e293b;
+}
+
+.dark-theme .nav-item {
+    color: #94a3b8;
+}
+
+.dark-theme .nav-item.active {
+    color: #2563eb;
+}
+
+.dark-theme .toast {
+    background-color: #1e293b;
+    color: #ffffff;
+}
+
+.dark-theme .prayer-disabled .prayer-button {
+    background-color: #334155 !important;
+    color: #64748b !important;
+    box-shadow: none !important;
+}
+
+/* ===========================
+   HEADER
+   =========================== */
+
+.header {
+    padding: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 448px;
+    margin: 0 auto;
+}
+
+.header-title {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+}
+
+.header-date {
+    font-size: 14px;
+    font-weight: 500;
+    margin-top: 4px;
+}
+
+.theme-toggle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    transition: all 0.2s;
+}
+
+.theme-toggle:hover {
+    transform: scale(1.05);
+}
+
+.theme-toggle:active {
+    transform: scale(0.95);
+}
+
+/* ===========================
+   MAIN CONTENT
+   =========================== */
+
+.main-content {
+    max-width: 448px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+/* ===========================
+   PROGRESS CARD
+   =========================== */
+
+.progress-card {
+    padding: 24px;
+    border-radius: 24px;
+    box-shadow: 0 25px 50px -12px rgba(37, 99, 235, 0.05);
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.progress-ring-container {
+    position: relative;
+    width: 96px;
+    height: 96px;
+}
+
+.progress-svg {
+    width: 96px;
+    height: 96px;
+}
+
+.progress-ring-fill {
     transition: stroke-dashoffset 0.35s;
     transform: rotate(-90deg);
     transform-origin: 50% 50%;
 }
 
-.tap-scale:active {
+.progress-text {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.progress-percent {
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.progress-title {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.progress-subtitle {
+    font-size: 14px;
+    margin-top: 4px;
+}
+
+/* ===========================
+   PRAYER LIST
+   =========================== */
+
+.prayer-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.prayer-card {
+    padding: 16px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: all 0.3s;
+}
+
+.prayer-card.done {
+    border-left: 4px solid #2563eb;
+}
+
+.prayer-card-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.prayer-button {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.prayer-button:active {
     transform: scale(0.95);
 }
 
-/* Disabled state */
+.prayer-button svg {
+    width: 20px;
+    height: 20px;
+}
+
+.prayer-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.prayer-name {
+    font-weight: 700;
+    font-size: 16px;
+}
+
+.prayer-status {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-top: 2px;
+}
+
+.prayer-card-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.jamaah-button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    transition: all 0.2s;
+}
+
+.jamaah-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.jamaah-icon svg {
+    width: 18px;
+    height: 18px;
+}
+
+.jamaah-label {
+    font-size: 8px;
+    font-weight: 700;
+}
+
+/* ===========================
+   DISABLED STATE
+   =========================== */
+
 .prayer-disabled {
     opacity: 0.5;
     pointer-events: none;
 }
 
-.prayer-disabled .prayer-button {
-    background: rgb(203 213 225) !important;
-    color: rgb(148 163 184) !important;
-    box-shadow: none !important;
-}
+/* ===========================
+   STATUS COLORS
+   =========================== */
 
-.dark .prayer-disabled .prayer-button {
-    background: rgb(51 65 85) !important;
-    color: rgb(100 116 139) !important;
-}
-
-/* Status label colors */
 .status-selesai {
-    color: rgb(59 130 246); /* blue-500 */
+    color: #3b82f6;
 }
 
 .status-belum {
-    color: rgb(234 179 8); /* yellow-500 */
+    color: #eab308;
 }
 
 .status-ketinggalan {
-    color: rgb(244 63 94); /* rose-500 */
+    color: #f43f5e;
 }
 
 .status-belum-waktunya {
-    color: rgb(148 163 184); /* slate-400 */
+    color: #94a3b8;
 }
 
-.dark .status-selesai {
-    color: rgb(96 165 250); /* blue-400 */
+.dark-theme .status-selesai {
+    color: #60a5fa;
 }
 
-.dark .status-belum {
-    color: rgb(250 204 21); /* yellow-400 */
+.dark-theme .status-belum {
+    color: #facc15;
 }
 
-.dark .status-ketinggalan {
-    color: rgb(251 113 133); /* rose-400 */
+.dark-theme .status-ketinggalan {
+    color: #fb7185;
 }
 
-.dark .status-belum-waktunya {
-    color: rgb(100 116 139); /* slate-500 */
+.dark-theme .status-belum-waktunya {
+    color: #64748b;
+}
+
+/* ===========================
+   QUOTE BOX
+   =========================== */
+
+.quote-box {
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 24px;
+}
+
+.quote-text {
+    font-size: 12px;
+    font-style: italic;
+    text-align: center;
+}
+
+/* ===========================
+   RESET BUTTON
+   =========================== */
+
+.reset-button {
+    width: 100%;
+    padding: 12px 0;
+    font-size: 14px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+/* ===========================
+   BOTTOM NAVIGATION
+   =========================== */
+
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 16px 24px;
+    display: flex;
+    justify-content: space-around;
+    max-width: 448px;
+    margin: 0 auto;
+    border-top-left-radius: 24px;
+    border-top-right-radius: 24px;
+    backdrop-filter: blur(10px);
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.nav-item svg {
+    width: 24px;
+    height: 24px;
+}
+
+.nav-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+/* ===========================
+   TOAST NOTIFICATION
+   =========================== */
+
+.toast {
+    position: fixed;
+    bottom: 96px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 8px 24px;
+    border-radius: 9999px;
+    font-size: 14px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+    z-index: 50;
+}
+
+.toast.show {
+    opacity: 1;
+}
+
+/* ===========================
+   RESPONSIVE (Tablet & Desktop)
+   =========================== */
+
+@media (min-width: 768px) {
+    body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .header,
+    .main-content,
+    .bottom-nav {
+        max-width: 448px;
+    }
 }
