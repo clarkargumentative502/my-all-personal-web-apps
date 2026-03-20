@@ -43,7 +43,7 @@ Semua proses dilakukan **tanpa laptop**.
 
 
 > **Mau baca lebih lengkap cara saya membuat setiap tools yang ada di repository ini?**  
-> Silakan kunjungi cara kerjanya di [WORKFLOW](WORKFLOW.md)
+> Silakan kunjungi cara kerjanya di [WORKFLOW](WORKFLOW.md) atau [WORKFLOW-VERSI-CEPAT](WORKFLOW-VERSI-CEPAT.md)
 
 
 ---
@@ -64,6 +64,8 @@ dst.
 - `index.html`
 - `style.css`
 - `script.js`
+atau
+- hanya `index.html` termasuk style css dan script js di dalamnya
 
 ---
 
@@ -134,7 +136,7 @@ Semuanya **tanpa laptop**.
 
 
 > **Mau baca lebih lengkap cara saya membuat setiap tools yang ada di repository ini?**  
-> Silakan kunjungi cara kerjanya di [WORKFLOW](WORKFLOW.md)
+> Silakan kunjungi cara kerjanya di [WORKFLOW](WORKFLOW.md) atau [WORKFLOW-VERSI-CEPAT](WORKFLOW-VERSI-CEPAT.md)
 
 
 ---
@@ -195,7 +197,7 @@ A: Untuk membuktikan bahwa keterbatasan device bukan halangan untuk mulai belaja
 
 
 > **Mau baca lebih lengkap cara saya membuat setiap tools yang ada di repository ini?**  
-> Silakan kunjungi cara kerjanya di [WORKFLOW](WORKFLOW.md)
+> Silakan kunjungi cara kerjanya di [WORKFLOW](WORKFLOW.md) atau [WORKFLOW-VERSI-CEPAT](WORKFLOW-VERSI-CEPAT.md)
 
 
 ---
