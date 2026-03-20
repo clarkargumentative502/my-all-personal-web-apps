@@ -151,24 +151,28 @@ function renderList() {
         const shouldDisable = !isEnabled && !item.done;
         
         const card = document.createElement('div');
-        card.className = `glass-card p-4 rounded-2xl flex items-center justify-between transition-all duration-300 ${item.done ? 'border-l-4 border-l-blue-500' : ''} ${shouldDisable ? 'prayer-disabled' : ''}`;
+        card.className = `prayer-card ${item.done ? 'done' : ''} ${shouldDisable ? 'prayer-disabled' : ''} glass-card`;
         
         card.innerHTML = `
-            <div class="flex items-center gap-4">
-                <button onclick="toggleDone('${p}')" class="prayer-button w-12 h-12 rounded-xl tap-scale flex items-center justify-center transition-all ${item.done ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/40' : 'bg-slate-100 dark:bg-slate-800 text-slate-400'}" ${shouldDisable ? 'disabled' : ''}>
-                    <i class="fa-solid ${item.done ? 'fa-check' : 'fa-pray'} text-lg"></i>
+            <div class="prayer-card-left">
+                <button onclick="toggleDone('${p}')" class="prayer-button ${item.done ? 'done' : ''}" ${shouldDisable ? 'disabled' : ''}>
+                    <svg width="20" height="20" viewBox="0 0 24 24">
+                        <use href="#icon-${item.done ? 'check' : 'pray'}"></use>
+                    </svg>
                 </button>
-                <div>
-                    <h3 class="font-bold text-slate-800 dark:text-slate-100">${displayName}</h3>
-                    <span class="text-[10px] font-bold uppercase tracking-widest ${status.class}">${status.label}</span>
+                <div class="prayer-info">
+                    <h3 class="prayer-name">${displayName}</h3>
+                    <span class="prayer-status ${status.class}">${status.label}</span>
                 </div>
             </div>
-            <div class="flex items-center gap-2">
-                <button onclick="toggleJamaah('${p}')" class="flex flex-col items-center gap-1 group" ${shouldDisable ? 'disabled' : ''}>
-                    <div class="w-10 h-10 rounded-full flex items-center justify-center transition-all ${item.jamaah ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600' : 'bg-transparent text-slate-300 dark:text-slate-700'}">
-                        <i class="fa-solid fa-mosque"></i>
+            <div class="prayer-card-right">
+                <button onclick="toggleJamaah('${p}')" class="jamaah-button ${item.jamaah ? 'active' : ''}" ${shouldDisable ? 'disabled' : ''}>
+                    <div class="jamaah-icon ${item.jamaah ? 'active' : ''}">
+                        <svg width="18" height="18" viewBox="0 0 24 24">
+                            <use href="#icon-mosque"></use>
+                        </svg>
                     </div>
-                    <span class="text-[8px] font-bold ${item.jamaah ? 'text-emerald-600' : 'text-slate-300 dark:text-slate-700'}">JAMAAH</span>
+                    <span class="jamaah-label">${item.jamaah ? 'JAMAAH' : 'JAMAAH'}</span>
                 </button>
             </div>
         `;
@@ -245,24 +249,47 @@ function resetData() {
 }
 
 function toggleDarkMode() {
-    document.documentElement.classList.toggle('dark');
-    const isDark = document.documentElement.classList.contains('dark');
-    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    const body = document.body;
+    const isDark = body.classList.contains('dark-theme');
+    
+    if (isDark) {
+        body.classList.remove('dark-theme');
+        body.classList.add('light-theme');
+    } else {
+        body.classList.remove('light-theme');
+        body.classList.add('dark-theme');
+    }
+    
+    const newIsDark = body.classList.contains('dark-theme');
+    localStorage.setItem('theme', newIsDark ? 'dark' : 'light');
     updateThemeIcon();
 }
 
 function checkTheme() {
     const savedTheme = localStorage.getItem('theme');
+    const body = document.body;
+    
     if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-        document.documentElement.classList.add('dark');
+        body.classList.remove('light-theme');
+        body.classList.add('dark-theme');
+    } else {
+        body.classList.remove('dark-theme');
+        body.classList.add('light-theme');
     }
     updateThemeIcon();
 }
 
 function updateThemeIcon() {
     const icon = document.getElementById('theme-icon');
-    const isDark = document.documentElement.classList.contains('dark');
-    icon.className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+    const isDark = document.body.classList.contains('dark-theme');
+    
+    if (isDark) {
+        // Show sun icon
+        icon.innerHTML = '<use href="#icon-sun"></use>';
+    } else {
+        // Show moon icon
+        icon.innerHTML = '<use href="#icon-moon"></use>';
+    }
 }
 
 function showToast(msg) {
