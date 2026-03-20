@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Buat kartu ucapan Idul Fitri digital yang bisa dipersonalisasi dan dibagikan via URL">
+    <meta name="theme-color" content="#667eea">
+    <title>🌙 Kartu Ucapan Idul Fitri</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- MAIN CONTAINER -->
+    <div class="app-container">
+        
+        <!-- VIEW 1: FORM INPUT -->
+        <div id="view-form" class="view active">
+            <div class="app-header">
+                <div class="logo">🌙</div>
+                <h1>Kartu Ucapan Digital</h1>
+                <p>Idul Fitri</p>
+            </div>
+
+            <form id="card-form" class="form-container">
+                <!-- Nama Input -->
+                <div class="form-section">
+                    <label class="form-label" for="nama-input">Nama Pengirim</label>
+                    <div class="input-wrapper">
+                        <input 
+                            type="text" 
+                            id="nama-input" 
+                            class="text-input" 
+                            placeholder="Contoh: Budi"
+                            maxlength="15"
+                            autocomplete="off"
+                            required
+                        >
+                        <span id="char-counter" class="char-counter">0/15</span>
+                    </div>
+                    
+                    <div class="checkbox-wrapper">
+                        <input 
+                            type="checkbox" 
+                            id="keluarga-checkbox" 
+                            class="checkbox-input"
+                        >
+                        <label for="keluarga-checkbox" class="checkbox-label">& Keluarga</label>
+                    </div>
+                </div>
+
+                <!-- Theme Selector -->
+                <div class="form-section">
+                    <label class="form-label">Pilih Tema</label>
+                    <div class="theme-selector">
+                        <div class="theme-option" data-theme="pink">
+                            <div class="theme-preview theme-preview-pink">
+                                <span class="theme-icon">🌸</span>
+                            </div>
+                            <div class="theme-name">Pink Mawar</div>
+                        </div>
+                        <div class="theme-option" data-theme="tosca">
+                            <div class="theme-preview theme-preview-tosca">
+                                <span class="theme-icon">✨</span>
+                            </div>
+                            <div class="theme-name">Hijau Tosca</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn-primary">
+                    <span>✨</span> Buat Kartu Ucapan
+                </button>
+            </form>
+        </div>
+
+        <!-- VIEW 2: CARD PREVIEW & SHARE -->
+        <div id="view-card" class="view">
+            <!-- Card Display (will be rendered by JS) -->
+            <div id="card-display" class="card-display"></div>
+
+            <!-- Share Section -->
+            <div class="share-section">
+                <h3 class="share-title">📤 Bagikan Kartu</h3>
+                
+                <!-- Share Buttons -->
+                <div class="share-buttons">
+                    <button id="btn-share-wa" class="btn-share btn-whatsapp">
+                        <span>📱</span> WhatsApp
+                    </button>
+                    <button id="btn-share-tg" class="btn-share btn-telegram">
+                        <span>✈️</span> Telegram
+                    </button>
+                </div>
+
+                <!-- URL Display -->
+                <div class="url-container">
+                    <input 
+                        type="text" 
+                        id="url-display" 
+                        class="url-input" 
+                        readonly
+                    >
+                    <button id="btn-copy-url" class="btn-copy">
+                        📋
+                    </button>
+                </div>
+
+                <!-- QR Code -->
+                <div class="qr-container">
+                    <canvas id="qr-canvas" width="200" height="200"></canvas>
+                </div>
+
+                <!-- Download & Back Buttons -->
+                <button id="btn-download" class="btn-download">
+                    <span>⬇️</span> Download sebagai Gambar
+                </button>
+
+                <button id="btn-back" class="btn-secondary">
+                    <span>←</span> Buat Kartu Baru
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <span id="toast-message"></span>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
