@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Tool konversi cipher offline - Binary, Base64, Morse Code">
+    <title>🔒 Binaria v3 - Multi Cipher Tool</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app-container">
+    <!-- Header -->
+    <header>
+        <div class="header-top">
+            <div>
+                <h1>BINARIA v3</h1>
+                <p class="subtitle">Advanced Cipher Tools</p>
+            </div>
+            <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
+                <span class="icon-sun">☀️</span>
+                <span class="icon-moon">🌙</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Card -->
+    <div class="card">
+        <!-- Controls -->
+        <div class="controls">
+            <!-- Mode Switch -->
+            <div class="mode-switch">
+                <button id="mode-encode" class="mode-btn active" data-mode="encode">
+                    ENCODE
+                </button>
+                <button id="mode-decode" class="mode-btn" data-mode="decode">
+                    DECODE
+                </button>
+            </div>
+
+            <!-- Cipher Selector -->
+            <select id="cipher-select" aria-label="Pilih cipher">
+                <option value="bin8">Binary (8-bit ASCII)</option>
+                <option value="bin16">Binary (16-bit Unicode)</option>
+                <option value="b64">Base64 Encoding</option>
+                <option value="morse">Morse Code</option>
+            </select>
+        </div>
+
+        <!-- Hint Box -->
+        <div id="hint" class="hint-box"></div>
+
+        <!-- Input Group -->
+        <div class="input-group">
+            <label id="label-input">Input Teks</label>
+            <textarea 
+                id="input-data" 
+                placeholder="Ketik di sini..." 
+                rows="4"
+                aria-label="Input area"></textarea>
+            <div id="error-msg" class="error">Input tidak valid untuk cipher ini!</div>
+            <div class="char-count">
+                <span id="char-count">0</span> karakter
+            </div>
+        </div>
+
+        <!-- Output Group -->
+        <div class="input-group">
+            <label>Hasil</label>
+            <div id="output-data" class="output-box" role="region" aria-live="polite">
+                <span class="placeholder-text">Hasil akan muncul di sini...</span>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-row">
+            <button class="btn btn-outline" id="btn-copy" title="Salin ke clipboard">
+                <span class="btn-icon">📋</span> Salin
+            </button>
+            <button class="btn btn-outline" id="btn-download" title="Download sebagai .txt">
+                <span class="btn-icon">💾</span> Download
+            </button>
+        </div>
+
+        <div class="action-row">
+            <button class="btn btn-outline" id="btn-export" title="Export sebagai HTML">
+                <span class="btn-icon">📤</span> Export HTML
+            </button>
+            <button class="btn btn-outline" id="btn-clear" title="Clear input/output">
+                <span class="btn-icon">🗑️</span> Clear
+            </button>
+        </div>
+
+        <button class="btn btn-primary" id="btn-save-history">
+            <span class="btn-icon">💾</span> Simpan ke Riwayat
+        </button>
+    </div>
+
+    <!-- History Section -->
+    <div class="history-section">
+        <div class="history-header">
+            <label class="history-title">Riwayat Konversi</label>
+            <button class="btn-clear-all" id="btn-clear-history" title="Hapus semua riwayat">
+                Hapus Semua
+            </button>
+        </div>
+        <div id="history-list" class="history-list">
+            <div class="history-empty">Belum ada riwayat</div>
+        </div>
+    </div>
+
+    <!-- Footer Info -->
+    <div class="footer-info">
+        <p>🔒 Semua proses dilakukan offline di browser Anda</p>
+        <p class="version">v3.0.0</p>
+    </div>
+</div>
+
+<!-- Toast Notification -->
+<div id="toast" role="alert" aria-live="assertive"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
