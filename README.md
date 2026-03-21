@@ -226,3 +226,9 @@ README ini…
 juga ditulis dengan bantuan AI.
 
 Dan mungkin, itu adalah bagian **paling jujur** dari seluruh repository ini.
+
+#### Baca juga LinkedIn post di bawah ini:
+
+- [Part 1 — Gimana caranya bikin web app sendiri pakai AI gratis (langsung dari smartphone)?](https://www.linkedin.com/posts/activity-7440235712421179392-Sxft)
+- [Part 2 — Gimana caranya bikin web app jadi live (langsung dari smartphone)?
+](https://www.linkedin.com/posts/activity-7440240681413152768-vCxe)
