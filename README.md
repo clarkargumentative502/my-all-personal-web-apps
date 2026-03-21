@@ -185,6 +185,16 @@ Jika kamu punya ide tools sederhana yang ingin dibuat, feel free untuk:
 
 - Fork repository ini
 - Atau gunakan workflow yang sama untuk projectmu sendiri
+1. Buka halaman repository ini di GitHub
+2. Klik tombol **Fork** di pojok kanan atas
+3. Pilih akun GitHub kamu sebagai tujuan fork
+4. Isi nama repository versimu, by default nama repository kamu akan langsung disamakan dengan nama repository ini
+5. Klik tombol **Create** dan tunggu sampai proses selesai
+- Setelah itu, kamu akan punya salinan repository ini di akun kamu sendiri.
+- Kamu bisa:
+  - Mengedit atau menambahkan tools versimu sendiri
+  - Menghapus folder tools yang tidak kamu perlukan
+  - Menggunakan repository ini sebagai codebase untuk project baru
 
 ---
 
@@ -230,5 +240,4 @@ Dan mungkin, itu adalah bagian **paling jujur** dari seluruh repository ini.
 #### Baca juga LinkedIn post di bawah ini:
 
 - [Part 1 — Gimana caranya bikin web app sendiri pakai AI gratis (langsung dari smartphone)?](https://www.linkedin.com/posts/activity-7440235712421179392-Sxft)
-- [Part 2 — Gimana caranya bikin web app jadi live (langsung dari smartphone)?
-](https://www.linkedin.com/posts/activity-7440240681413152768-vCxe)
+- [Part 2 — Gimana caranya bikin web app jadi live (langsung dari smartphone)?](https://www.linkedin.com/posts/activity-7440240681413152768-vCxe)
