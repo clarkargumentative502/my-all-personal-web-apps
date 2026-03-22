@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fastodo - Smart To-Do List</title>
+    <style>
+        :root {
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-sub: #64748b;
+            --color-todo: #3b82f6;      
+            --color-progress: #8b5cf6;  
+            --color-complete: #10b981;  
+            --accent: #0f172a;
+            --border: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding-bottom: 100px;
+        }
+
+        header {
+            background: var(--card-bg);
+            padding: 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--border);
+            box-shadow: var(--shadow);
+        }
+
+        h1 {
+            font-size: 1.7rem;
+            font-weight: 900;
+            margin-bottom: 15px;
+            letter-spacing: -1px;
+            color: var(--accent);
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            font-size: 1rem;
+            background: #f1f5f9;
+            margin-bottom: 12px;
+            outline: none;
+        }
+
+        .filters {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+            scrollbar-width: none;
+            align-items: center;
+        }
+        .filters::-webkit-scrollbar { display: none; }
+
+        .filter-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            background: white;
+            white-space: nowrap;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .filter-btn svg { width: 16px; height: 16px; stroke: currentColor; stroke-width: 2; fill: none; }
+        .filter-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
+
+        /* Flip Logic for Sort Icon */
+        .icon-flip { transform: scaleY(-1); }
+
+        .container {
+            padding: 20px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .task-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 18px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow);
+            border-left: 6px solid var(--color-todo);
+            position: relative;
+        }
+
+        .task-card.in-progress { border-left-color: var(--color-progress); }
+        .task-card.completed { border-left-color: var(--color-complete); opacity: 0.9; }
+
+        .task-title { font-weight: 700; font-size: 1.1rem; padding-right: 40px; }
+        .task-meta { font-size: 0.75rem; color: var(--text-sub); margin-top: 6px; }
+        .category-tag { display: inline-block; padding: 2px 8px; background: #f1f5f9; border-radius: 4px; margin-right: 6px; font-weight: 600; }
+
+        .subtasks-list { margin-top: 12px; border-top: 1px dashed var(--border); padding-top: 12px; }
+        .subtask-item { display: flex; align-items: center; gap: 10px; padding: 4px 0; font-size: 0.95rem; }
+        .subtask-item input { width: 18px; height: 18px; accent-color: var(--accent); }
+
+        .progress-canvas { position: absolute; top: 18px; right: 18px; }
+
+        .card-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            font-size: 0.8rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-weight: 600;
+        }
+        .btn-edit { color: var(--warning); }
+        .btn-delete { color: var(--danger); }
+
+        .fab {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: var(--accent);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3);
+            border: none;
+            z-index: 200;
+        }
+
+        /* Modal Styles */
+        .modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+            backdrop-filter: blur(4px);
+        }
+        .modal.active { display: flex; }
+        .modal-content {
+            background: white;
+            width: 100%;
+            max-width: 420px;
+            border-radius: 24px;
+            padding: 24px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; margin-bottom: 6px; font-weight: 700; font-size: 0.9rem; }
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            outline: none;
+            font-size: 1rem;
+        }
+
+        .subtask-input-row { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; }
+        .remove-sub-btn { color: var(--danger); background: none; border: none; font-size: 1.2rem; cursor: pointer; }
+
+        .btn-group { display: flex; gap: 12px; margin-top: 24px; }
+        .btn { flex: 1; padding: 14px; border-radius: 12px; border: none; font-weight: 700; cursor: pointer; }
+        .btn-p { background: var(--accent); color: white; }
+        .btn-s { background: #e2e8f0; color: var(--text-main); }
+        .btn-d { background: var(--danger); color: white; }
+
+        .empty-state { text-align: center; padding: 80px 20px; color: var(--text-sub); font-weight: 500; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Fastodo</h1>
+        <input type="text" id="searchInput" class="search-box" placeholder="Cari judul atau kategori...">
+        
+        <div class="filters" id="statusFilters">
+            <button class="filter-btn active" data-filter="all">
+                <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                Semua
+            </button>
+            <button class="filter-btn" data-filter="todo">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle></svg>
+                To Do
+            </button>
+            <button class="filter-btn" data-filter="inprogress">
+                <svg viewBox="0 0 24 24"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"></path></svg>
+                In Progress
+            </button>
+            <button class="filter-btn" data-filter="complete">
+                <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                Complete
+            </button>
+        </div>
+
+        <div class="filters" id="sortFilters" style="margin-top: 8px;">
+            <button class="filter-btn active" data-sort="desc">
+                <svg viewBox="0 0 24 24"><path d="M3 16l4 4 4-4m-4 4V4m14 12l-4-4-4 4m4-4v12"></path></svg>
+                Terbaru
+            </button>
+            <button class="filter-btn" data-sort="asc">
+                <svg viewBox="0 0 24 24" class="icon-flip"><path d="M3 16l4 4 4-4m-4 4V4m14 12l-4-4-4 4m4-4v12"></path></svg>
+                Terlama
+            </button>
+        </div>
+    </header>
+
+    <main class="container" id="taskList"></main>
+
+    <button class="fab" id="openModalBtn">+</button>
+
+    <!-- Modal Form (Add & Edit) -->
+    <div class="modal" id="taskModal">
+        <div class="modal-content">
+            <h2 id="modalTitle" style="margin-bottom: 20px;">Tugas Baru</h2>
+            <input type="hidden" id="editTaskId">
+            <div class="form-group">
+                <label>Judul</label>
+                <input type="text" id="taskTitle" placeholder="Apa yang ingin dikerjakan?">
+            </div>
+            <div class="form-group">
+                <label>Kategori</label>
+                <input type="text" id="taskCategory" placeholder="Misal: Kerja, Rumah">
+            </div>
+            <div class="form-group">
+                <label>Sub-tugas</label>
+                <div id="subtaskInputs"></div>
+                <button type="button" id="addSubtaskBtn" style="background:none; border:none; color:var(--color-todo); font-size:0.9rem; margin-top:10px; cursor:pointer; font-weight:700;">+ Tambah Sub-tugas</button>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-s" id="closeModalBtn">Batal</button>
+                <button class="btn btn-p" id="saveTaskBtn">Simpan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Delete Confirm -->
+    <div class="modal" id="deleteConfirmModal">
+        <div class="modal-content" style="text-align: center;">
+            <div style="color: var(--danger); margin-bottom: 15px;">
+                <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+            </div>
+            <h3>Hapus Tugas?</h3>
+            <p style="color: var(--text-sub); margin-top: 10px;">Data yang dihapus tidak bisa dikembalikan.</p>
+            <div class="btn-group">
+                <button class="btn btn-s" id="cancelDeleteBtn">Batal</button>
+                <button class="btn btn-d" id="confirmDeleteBtn">Ya, Hapus</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let tasks = JSON.parse(localStorage.getItem('fastodo_db')) || [];
+        let currentFilter = 'all';
+        let currentSort = 'desc';
+        let deleteId = null;
+
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playDing() {
+            if(audioCtx.state === 'suspended') audioCtx.resume();
+            const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+            o.type = 'sine'; o.frequency.setValueAtTime(587.33, audioCtx.currentTime);
+            o.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.1);
+            g.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+            o.connect(g); g.connect(audioCtx.destination);
+            o.start(); o.stop(audioCtx.currentTime + 0.3);
+        }
+
+        function drawRing(id, pct, color) {
+            const c = document.getElementById(id);
+            if(!c) return;
+            const ctx = c.getContext('2d'), x = 20, y = 20, r = 14;
+            ctx.clearRect(0,0,40,40);
+            ctx.beginPath(); ctx.arc(x,y,r,0,2*Math.PI); ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 4; ctx.stroke();
+            if(pct > 0) {
+                ctx.beginPath(); ctx.arc(x,y,r,-Math.PI/2, (-Math.PI/2)+(2*Math.PI*(pct/100)));
+                ctx.strokeStyle = color; ctx.lineWidth = 4; ctx.lineCap = 'round'; ctx.stroke();
+            }
+        }
+
+        function save() { localStorage.setItem('fastodo_db', JSON.stringify(tasks)); }
+
+        function getStatus(t) {
+            const done = t.subtasks.filter(s => s.completed).length;
+            if(done === 0) return 'todo';
+            return done === t.subtasks.length ? 'complete' : 'inprogress';
+        }
+
+        function render() {
+            const list = document.getElementById('taskList');
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            
+            let filtered = tasks.filter(t => {
+                const match = t.title.toLowerCase().includes(search) || t.category.toLowerCase().includes(search);
+                const statMatch = currentFilter === 'all' || getStatus(t) === currentFilter;
+                return match && statMatch;
+            });
+
+            filtered.sort((a,b) => currentSort === 'desc' ? b.id - a.id : a.id - b.id);
+
+            if(filtered.length === 0) {
+                list.innerHTML = `<div class="empty-state">Belum ada tugas. Yuk buat satu!</div>`;
+                return;
+            }
+
+            list.innerHTML = '';
+            filtered.forEach(t => {
+                const stat = getStatus(t);
+                const pct = (t.subtasks.filter(s => s.completed).length / t.subtasks.length) * 100;
+                let color = 'var(--color-todo)', cls = '';
+                if(stat === 'inprogress') { color = 'var(--color-progress)'; cls = 'in-progress'; }
+                if(stat === 'complete') { color = 'var(--color-complete)'; cls = 'completed'; }
+
+                const el = document.createElement('div');
+                el.className = `task-card ${cls}`;
+                el.innerHTML = `
+                    <canvas id="cv-${t.id}" class="progress-canvas" width="40" height="40"></canvas>
+                    <div class="task-title">${t.title}</div>
+                    <div class="task-meta"><span class="category-tag">${t.category}</span> ${new Date(t.id).toLocaleDateString('id-ID')}</div>
+                    <div class="subtasks-list">
+                        ${t.subtasks.map((s, i) => `
+                            <div class="subtask-item">
+                                <input type="checkbox" ${s.completed ? 'checked' : ''} onchange="toggleS(${t.id},${i})">
+                                <span style="${s.completed ? 'text-decoration:line-through;opacity:0.6':''}">${s.text}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="card-actions">
+                        <button class="action-btn btn-edit" onclick="openEdit(${t.id})">
+                            <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                            Edit
+                        </button>
+                        <button class="action-btn btn-delete" onclick="askDel(${t.id})">
+                            <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                            Hapus
+                        </button>
+                    </div>
+                `;
+                list.appendChild(el);
+                drawRing(`cv-${t.id}`, pct, color);
+            });
+        }
+
+        window.toggleS = (id, idx) => {
+            const t = tasks.find(x => x.id === id);
+            const wasDone = getStatus(t) === 'complete';
+            t.subtasks[idx].completed = !t.subtasks[idx].completed;
+            if(!wasDone && getStatus(t) === 'complete') playDing();
+            save(); render();
+        };
+
+        // --- CRUD MODAL ---
+        const m = document.getElementById('taskModal');
+        const sInputs = document.getElementById('subtaskInputs');
+        
+        function addSRow(val = '') {
+            const d = document.createElement('div');
+            d.className = 'subtask-input-row';
+            d.innerHTML = `<input type="text" class="si" value="${val}" placeholder="Detail sub-tugas..."><button class="remove-sub-btn" onclick="this.parentElement.remove()">×</button>`;
+            sInputs.appendChild(d);
+        }
+
+        document.getElementById('openModalBtn').onclick = () => {
+            document.getElementById('editTaskId').value = '';
+            document.getElementById('modalTitle').innerText = 'Tugas Baru';
+            document.getElementById('taskTitle').value = '';
+            document.getElementById('taskCategory').value = '';
+            sInputs.innerHTML = ''; addSRow();
+            m.classList.add('active');
+        };
+
+        window.openEdit = (id) => {
+            const t = tasks.find(x => x.id === id);
+            document.getElementById('editTaskId').value = id;
+            document.getElementById('modalTitle').innerText = 'Edit Tugas';
+            document.getElementById('taskTitle').value = t.title;
+            document.getElementById('taskCategory').value = t.category;
+            sInputs.innerHTML = '';
+            t.subtasks.forEach(s => addSRow(s.text));
+            m.classList.add('active');
+        };
+
+        document.getElementById('addSubtaskBtn').onclick = () => addSRow();
+        document.getElementById('closeModalBtn').onclick = () => m.classList.remove('active');
+
+        document.getElementById('saveTaskBtn').onclick = () => {
+            const title = document.getElementById('taskTitle').value.trim();
+            const cat = document.getElementById('taskCategory').value.trim() || 'Umum';
+            const subs = Array.from(document.querySelectorAll('.si')).map(i => i.value.trim()).filter(x => x !== '');
+            const eId = document.getElementById('editTaskId').value;
+
+            if(!title || subs.length === 0) return alert('Isi judul & minimal 1 sub-tugas!');
+
+            if(eId) {
+                const t = tasks.find(x => x.id == eId);
+                t.title = title; t.category = cat;
+                // Preserve completion state for existing subtasks if text matches, or just reset if new
+                t.subtasks = subs.map(text => {
+                    const old = t.subtasks.find(o => o.text === text);
+                    return { text, completed: old ? old.completed : false };
+                });
+            } else {
+                tasks.push({ id: Date.now(), title, category: cat, subtasks: subs.map(text => ({text, completed:false})) });
+            }
+            save(); render(); m.classList.remove('active');
+        };
+
+        // --- DELETE MODAL ---
+        window.askDel = (id) => { deleteId = id; document.getElementById('deleteConfirmModal').classList.add('active'); };
+        document.getElementById('cancelDeleteBtn').onclick = () => document.getElementById('deleteConfirmModal').classList.remove('active');
+        document.getElementById('confirmDeleteBtn').onclick = () => {
+            tasks = tasks.filter(x => x.id !== deleteId);
+            save(); render(); document.getElementById('deleteConfirmModal').classList.remove('active');
+        };
+
+        // --- FILTERS ---
+        document.getElementById('searchInput').oninput = render;
+        document.getElementById('statusFilters').onclick = (e) => {
+            const b = e.target.closest('.filter-btn');
+            if(b) { 
+                document.querySelectorAll('#statusFilters .filter-btn').forEach(x => x.classList.remove('active'));
+                b.classList.add('active'); currentFilter = b.dataset.filter; render();
+            }
+        };
+        document.getElementById('sortFilters').onclick = (e) => {
+            const b = e.target.closest('.filter-btn');
+            if(b) { 
+                document.querySelectorAll('#sortFilters .filter-btn').forEach(x => x.classList.remove('active'));
+                b.classList.add('active'); currentSort = b.dataset.sort; render();
+            }
+        };
+
+        window.onload = render;
+    </script>
+</body>
+</html>
