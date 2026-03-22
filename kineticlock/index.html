@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Kineticlock - Ultra Minimalist Clock</title>
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --clock-line: #f2f2f2;
+            --hand-color: #333333;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #0a0a0a;
+            --clock-line: #1a1a1a;
+            --hand-color: #ffffff;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-color);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 1s ease;
+            overflow: hidden;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 600px;
+        }
+
+        #clockCanvas {
+            width: 100%;
+            height: auto;
+            aspect-ratio: 8 / 3;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <canvas id="clockCanvas"></canvas>
+    </div>
+
+    <script>
+        /**
+         * KINETICLOCK - ULTRA MINIMALIST CLOCK EDITION
+         * Fitur: Auto-hide jarum netral & UI tanpa teks.
+         */
+
+        const canvas = document.getElementById('clockCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let clocks = [];
+        let cellSize, lastTime = "";
+        let audioCtx = null;
+
+        const COLS = 8; 
+        const ROWS = 3;
+
+        // Definisi Arah (Derajat)
+        const U = 0, R = 90, D = 180, L = 270, N = 225;
+
+        // Blueprint 2x3 per Digit (0-9)
+        const DIGIT_BLUEPRINT = {
+            '0': [[[R,D],[L,D]], [[U,D],[U,D]], [[U,R],[U,L]]],
+            '1': [[[N,N],[D,D]], [[N,N],[U,D]], [[N,N],[U,U]]],
+            '2': [[[R,R],[L,D]], [[R,D],[L,U]], [[U,R],[L,L]]],
+            '3': [[[R,R],[L,D]], [[R,R],[L,D]], [[R,R],[L,U]]],
+            '4': [[[D,D],[D,D]], [[U,R],[U,D]], [[N,N],[U,U]]],
+            '5': [[[R,D],[L,L]], [[U,R],[L,D]], [[R,R],[L,U]]],
+            '6': [[[R,D],[L,L]], [[U,D],[L,D]], [[U,R],[L,U]]],
+            '7': [[[R,R],[L,D]], [[N,N],[U,D]], [[N,N],[U,U]]],
+            '8': [[[R,D],[L,D]], [[U,R],[L,D]], [[U,R],[L,U]]],
+            '9': [[[R,D],[L,D]], [[U,R],[U,D]], [[N,N],[U,U]]]
+        };
+
+        class ClockUnit {
+            constructor(r, c) {
+                this.r = r;
+                this.c = c;
+                this.h = N; this.m = N;
+                this.th = N; this.tm = N;
+                this.opacity = 0; // Mulai dari transparan
+                this.targetOpacity = 0;
+                this.speed = 0.06;
+                this.fadeSpeed = 0.05;
+            }
+
+            update() {
+                this.h = this.lerp(this.h, this.th, this.speed);
+                this.m = this.lerp(this.m, this.tm, this.speed);
+                
+                // Logika Transparansi: Jika target adalah N (225), maka sembunyikan
+                this.targetOpacity = (this.th === N && this.tm === N) ? 0 : 1;
+                
+                if (this.opacity < this.targetOpacity) {
+                    this.opacity = Math.min(1, this.opacity + this.fadeSpeed);
+                } else if (this.opacity > this.targetOpacity) {
+                    this.opacity = Math.max(0, this.opacity - this.fadeSpeed);
+                }
+            }
+
+            lerp(a, b, t) {
+                let d = (b - a + 540) % 360 - 180;
+                return a + d * t;
+            }
+
+            draw() {
+                const x = Math.floor(this.c * cellSize + cellSize / 2);
+                const y = Math.floor(this.r * cellSize + cellSize / 2);
+                const radius = cellSize * 0.44;
+
+                // Lingkaran bingkai selalu ada tapi sangat tipis
+                ctx.globalAlpha = 1;
+                ctx.beginPath();
+                ctx.arc(x, y, radius, 0, Math.PI * 2);
+                ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--clock-line');
+                ctx.lineWidth = 1;
+                ctx.stroke();
+
+                // Hanya gambar jarum jika opasitas > 0
+                if (this.opacity > 0) {
+                    ctx.globalAlpha = this.opacity;
+                    this.drawHand(x, y, this.h, radius * 0.85);
+                    this.drawHand(x, y, this.m, radius * 0.85);
+                }
+            }
+
+            drawHand(x, y, angle, len) {
+                const rad = (angle - 90) * (Math.PI / 180);
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+                ctx.lineTo(x + Math.cos(rad) * len, y + Math.sin(rad) * len);
+                ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--hand-color');
+                ctx.lineWidth = 2.5;
+                ctx.lineCap = 'round';
+                ctx.stroke();
+            }
+        }
+
+        function init() {
+            const w = canvas.parentElement.clientWidth;
+            cellSize = w / COLS;
+            const h = cellSize * ROWS;
+            
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = w * dpr;
+            canvas.height = h * dpr;
+            ctx.scale(dpr, dpr);
+
+            clocks = [];
+            for (let r = 0; r < ROWS; r++) {
+                for (let c = 0; c < COLS; c++) {
+                    clocks.push(new ClockUnit(r, c));
+                }
+            }
+            updateTime(true);
+        }
+
+        function updateTime(force = false) {
+            const now = new Date();
+            const hourStr = String(now.getHours()).padStart(2, '0');
+            const minStr = String(now.getMinutes()).padStart(2, '0');
+            const timeStr = hourStr + minStr;
+
+            // Auto Dark Mode
+            const hour = now.getHours();
+            const isDark = hour >= 18 || hour < 6;
+            document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+
+            if (timeStr !== lastTime || force) {
+                if (!force) playTick();
+                lastTime = timeStr;
+
+                for (let d = 0; d < 4; d++) {
+                    const char = timeStr[d];
+                    const blueprint = DIGIT_BLUEPRINT[char];
+                    const startCol = d * 2;
+
+                    for (let r = 0; r < 3; r++) {
+                        for (let c = 0; c < 2; c++) {
+                            const idx = r * COLS + (startCol + c);
+                            clocks[idx].th = blueprint[r][c][0];
+                            clocks[idx].tm = blueprint[r][c][1];
+                        }
+                    }
+                }
+            }
+        }
+
+        function playTick() {
+            if (!audioCtx) return;
+            const o = audioCtx.createOscillator();
+            const g = audioCtx.createGain();
+            o.type = 'sine';
+            o.frequency.setValueAtTime(400, audioCtx.currentTime);
+            o.frequency.exponentialRampToValueAtTime(10, audioCtx.currentTime + 0.1);
+            g.gain.setValueAtTime(0.04, audioCtx.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
+            o.connect(g); g.connect(audioCtx.destination);
+            o.start(); o.stop(audioCtx.currentTime + 0.1);
+        }
+
+        function render() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            clocks.forEach(c => { c.update(); c.draw(); });
+            requestAnimationFrame(render);
+        }
+
+        window.addEventListener('resize', init);
+        ['mousedown', 'touchstart'].forEach(e => {
+            window.addEventListener(e, () => {
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }, { once: true });
+        });
+
+        init();
+        render();
+        setInterval(updateTime, 1000);
+    </script>
+</body>
+</html>
