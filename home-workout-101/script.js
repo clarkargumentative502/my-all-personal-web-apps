@@ -586,7 +586,7 @@ function renderCurrentWorkout() {
         const emptyState = document.createElement('div');
         emptyState.className = 'empty-state';
         emptyState.innerHTML = `
-            <div class="empty-state-icon">馃挭</div>
+            <div class="empty-state-icon">💪</div>
             <div class="empty-state-text">No exercises yet. ${isCustomRoutine ? 'Add some to get started!' : ''}</div>
         `;
         exercisesList.appendChild(emptyState);
@@ -666,7 +666,7 @@ function renderWorkoutSummary() {
             <div class="progress-bar-fill" style="width: ${stats.progressPercentage}%"></div>
         </div>
         <div class="progress-text">
-            ${stats.progressPercentage === 100 ? '馃帀 Workout Complete! Great job!' : 'Keep going, you got this!'}
+            ${stats.progressPercentage === 100 ? '🎉 Workout Complete! Great job!' : 'Keep going, you got this!'}
         </div>
     `;
 }
@@ -705,7 +705,7 @@ function completeWorkout() {
     
     // Celebrate!
     const completeBtn = document.getElementById('completeWorkoutBtn');
-    completeBtn.textContent = '鉁� Saved!';
+    completeBtn.textContent = '✅ Saved!';
     completeBtn.classList.add('celebrating');
     
     setTimeout(() => {
@@ -937,11 +937,11 @@ function renderLibraryList() {
         
         item.innerHTML = `
             <div class="library-checkbox">
-                <span class="library-checkbox-icon">鉁�</span>
+                <span class="library-checkbox-icon">✓</span>
             </div>
             <div class="library-item-info">
                 <div class="library-item-name">${exercise.name}</div>
-                <div class="library-item-meta">${exercise.category} 鈥� ${exercise.defaultSets} sets 脳 ${exercise.defaultReps} reps</div>
+                <div class="library-item-meta">${exercise.category} • ${exercise.defaultSets} sets × ${exercise.defaultReps} reps</div>
             </div>
         `;
         
@@ -1080,10 +1080,10 @@ function setTheme(theme) {
     html.setAttribute('data-theme', theme);
     
     if (theme === 'dark') {
-        themeToggle.textContent = '鈽€锔� Light';
+        themeToggle.textContent = '☀️ Light';
         themeColorMeta.setAttribute('content', '#191919');
     } else {
-        themeToggle.textContent = '馃寵 Dark';
+        themeToggle.textContent = '🌙 Dark';
         themeColorMeta.setAttribute('content', '#FFFFFF');
     }
 }
@@ -1194,4 +1194,3 @@ window.addEventListener('DOMContentLoaded', () => {
         libraryState.searchQuery = e.target.value;
         renderLibraryList();
     });
-});
