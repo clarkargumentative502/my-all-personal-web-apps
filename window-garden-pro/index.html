@@ -257,7 +257,7 @@
 </head>
 <body class="day">
 
-    <button class="btn-settings" onclick="toggleModal(true)">🌰</button>
+    <button class="btn-settings" onclick="toggleModal(true)">⏳</button>
     <div class="sky-body"></div>
 
     <div class="stage" id="stage">
@@ -516,7 +516,7 @@
         function spawnAmbientLeaf() {
             const leaf = document.createElement('div');
             leaf.className = 'floating-leaf';
-            leaf.innerHTML = Math.random() > 0.5 ? "🍃" : "🍂";
+            leaf.innerHTML = Math.random() > 0.5 ? "🌼" : "🌸";
             leaf.style.left = Math.random() * 100 + "vw";
             leaf.style.top = "-5vh";
             leaf.style.fontSize = (Math.random() * 15 + 15) + "px";
@@ -531,7 +531,7 @@
         function spawnButterfly() {
             const b = document.createElement('div');
             b.className = 'butterfly';
-            b.innerHTML = "🦋";
+            b.innerHTML = "🐞";
             const side = Math.random() > 0.5;
             b.style.left = side ? "-50px" : "110vw";
             b.style.top = (Math.random() * 40 + 20) + "vh";
