@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Love Me: Pesan Cinta Kamu</title>
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --accent-color: #ec4899;
+            --accent-soft: #fdf2f8;
+            --text-main: #1e293b;
+            --text-dim: #64748b;
+            --transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: var(--font-stack);
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 1.2s ease;
+        }
+
+        #zen-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            width: 100%;
+            height: 100%;
+            opacity: 0.6;
+        }
+
+        /* Orb Section */
+        .orb-container {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            z-index: 10;
+        }
+
+        .orb-container.input-active {
+            pointer-events: none;
+        }
+
+        .orb {
+            width: 180px;
+            height: 180px;
+            background: radial-gradient(circle, var(--accent-color), transparent 70%);
+            border-radius: 50%;
+            filter: blur(25px);
+            opacity: 0.3;
+            animation: breathe 8s infinite ease-in-out;
+        }
+
+        @keyframes breathe {
+            0%, 100% { transform: scale(1); opacity: 0.2; }
+            50% { transform: scale(1.6); opacity: 0.5; }
+        }
+
+        .orb-text {
+            position: absolute;
+            font-size: 0.9rem;
+            letter-spacing: 0.15rem;
+            text-transform: uppercase;
+            color: var(--text-main);
+            opacity: 0.6;
+            pointer-events: none;
+            text-align: center;
+            font-weight: 500;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+
+        .orb-text.fade-out {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+
+        /* Feedback Text - Separated from Orb */
+        #feedback-text {
+            position: absolute;
+            top: 25%;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--accent-color);
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.8s ease;
+            pointer-events: none;
+            z-index: 15;
+        }
+
+        #feedback-text.show {
+            opacity: 1;
+        }
+
+        /* UI Content with Delayed Entry */
+        .content {
+            position: absolute;
+            bottom: 10%;
+            width: 85%;
+            max-width: 400px;
+            text-align: center;
+            transition: var(--transition);
+            /* Initial state for intro animation */
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .content.ready {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .journal-input {
+            width: 100%;
+            background: #f8fafc;
+            border: 2px solid #f1f5f9;
+            border-radius: 20px;
+            padding: 18px;
+            color: var(--text-main);
+            font-family: var(--font-stack);
+            font-size: 1rem;
+            outline: none;
+            margin-bottom: 24px;
+            resize: none;
+            transition: var(--transition);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        }
+
+        .journal-input:focus {
+            border-color: var(--accent-color);
+            background: #fff;
+            box-shadow: 0 8px 20px rgba(236, 72, 153, 0.1);
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+        }
+
+        button {
+            background: #f8fafc;
+            border: 1px solid #f1f5f9;
+            color: var(--text-dim);
+            font-family: var(--font-stack);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08rem;
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: var(--transition);
+            border-radius: 30px;
+            font-weight: 500;
+        }
+
+        #btn-save {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);
+        }
+
+        #btn-save:active {
+            transform: scale(0.95);
+        }
+
+        button.active-mode {
+            color: var(--accent-color);
+            background: var(--accent-soft);
+            border-color: var(--accent-soft);
+        }
+
+        .hidden {
+            opacity: 0 !important;
+            pointer-events: none;
+            transform: translateY(30px);
+        }
+
+        /* History Overlay */
+        #log-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #ffffff;
+            z-index: 100;
+            padding: 60px 24px;
+            overflow-y: auto;
+            display: none;
+            animation: slideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            margin-bottom: 35px;
+        }
+
+        .log-item {
+            position: relative;
+            padding: 24px;
+            background: #f8fafc;
+            border: 1px solid #f1f5f9;
+            border-radius: 24px;
+            margin-bottom: 20px;
+        }
+
+        .log-date {
+            display: block;
+            font-size: 0.7rem;
+            color: var(--accent-color);
+            margin-bottom: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .log-text { font-size: 1rem; line-height: 1.6; }
+
+        .delete-item {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            color: #cbd5e1;
+            font-size: 1.4rem;
+            padding: 5px;
+            cursor: pointer;
+        }
+
+        .clear-all { color: #ef4444; font-size: 0.7rem; font-weight: 600; border: none; background: none; }
+
+        .close-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            font-size: 2rem;
+            color: var(--text-main);
+            z-index: 101;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="zen-canvas"></canvas>
+
+    <!-- Separated Feedback Text -->
+    <div id="feedback-text"></div>
+
+    <div class="orb-container" id="orb-trigger">
+        <div class="orb"></div>
+        <div class="orb-text" id="status-text">Ketuk untuk Tenang</div>
+    </div>
+
+    <div class="content" id="main-ui">
+        <textarea id="compassion-input" class="journal-input" placeholder="Apa hal baik tentangmu hari ini?" rows="2"></textarea>
+        
+        <div class="nav-buttons">
+            <button id="btn-save">Simpan</button>
+            <button id="btn-history">Diary</button>
+            <button id="btn-zen">Mode Hening</button>
+        </div>
+    </div>
+
+    <div id="log-overlay">
+        <span class="close-btn" id="close-history">×</span>
+        <div class="history-header">
+            <button class="clear-all" id="btn-clear-all">Hapus Semua</button>
+        </div>
+        <div id="log-container"></div>
+    </div>
+
+    <script>
+        // State
+        let isZenActive = false;
+        let audioCtx = null;
+        let oscillator = null;
+        let gainNode = null;
+
+        // Background color constants
+        const zenBg = "#fff0f6";
+        const normalBg = "#ffffff";
+
+        const canvas = document.getElementById('zen-canvas');
+        const ctx = canvas.getContext('2d');
+        const orbTrigger = document.getElementById('orb-trigger');
+        const statusText = document.getElementById('status-text');
+        const feedbackText = document.getElementById('feedback-text');
+        const mainUi = document.getElementById('main-ui');
+        const input = document.getElementById('compassion-input');
+        const btnSave = document.getElementById('btn-save');
+        const btnHistory = document.getElementById('btn-history');
+        const btnClearAll = document.getElementById('btn-clear-all');
+        const btnZen = document.getElementById('btn-zen');
+        const logOverlay = document.getElementById('log-overlay');
+        const logContainer = document.getElementById('log-container');
+        const closeHistory = document.getElementById('close-history');
+
+        // Security: XSS Guard
+        function escapeHTML(str) {
+            const p = document.createElement('p');
+            p.textContent = str;
+            return p.innerHTML;
+        }
+
+        // Particle System
+        const particles = [];
+        function createParticles() {
+            particles.length = 0;
+            for (let i = 0; i < 35; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    size: Math.random() * 3 + 1,
+                    speed: Math.random() * 0.4 + 0.1,
+                    opacity: Math.random() * 0.3
+                });
+            }
+        }
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            createParticles(); // Improvement: Reset position on resize
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.y -= p.speed;
+                if (p.y < 0) p.y = canvas.height;
+                ctx.fillStyle = `rgba(236, 72, 153, ${p.opacity})`;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        // Audio Logic
+        function toggleZenAudio() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+            if (!isZenActive) {
+                // Bug fix: Clean existing oscillator before starting new one
+                if (oscillator) {
+                    try { oscillator.stop(); } catch(e) {}
+                    oscillator = null;
+                }
+
+                oscillator = audioCtx.createOscillator();
+                gainNode = audioCtx.createGain();
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(110, audioCtx.currentTime); 
+                gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+                gainNode.gain.linearRampToValueAtTime(0.04, audioCtx.currentTime + 2); 
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                oscillator.start();
+                
+                isZenActive = true;
+                statusText.innerText = "Tarik Napas...";
+                mainUi.classList.add('hidden');
+                btnZen.classList.add('active-mode');
+                
+                // Change background to Zen mode
+                document.body.style.backgroundColor = zenBg;
+            } else {
+                if (gainNode) {
+                    gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 1);
+                    setTimeout(() => {
+                        if (oscillator) {
+                            oscillator.stop();
+                            oscillator = null;
+                        }
+                        isZenActive = false;
+                        statusText.innerText = "Ketuk untuk Tenang";
+                        mainUi.classList.remove('hidden');
+                        btnZen.classList.remove('active-mode');
+                        
+                        // Restore normal background
+                        document.body.style.backgroundColor = normalBg;
+                    }, 1000);
+                }
+            }
+        }
+
+        // Data Storage
+        function getLogs() { return JSON.parse(localStorage.getItem('love_me_logs') || '[]'); }
+        function saveLogs(logs) { localStorage.setItem('love_me_logs', JSON.stringify(logs)); }
+
+        function saveToLog() {
+            const text = input.value.trim();
+            if (!text) return;
+
+            const logs = getLogs();
+            logs.unshift({
+                id: Date.now(),
+                text: text,
+                date: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
+            });
+            saveLogs(logs);
+            
+            input.value = '';
+            
+            // UX Improvement: Random affirmative messages (now in separate feedback div)
+            const messages = [
+                "Kamu sudah berjuang hari ini 💝",
+                "Terima kasih sudah bertahan 💓",
+                "Itu sungguh sangat berarti 💗",
+                "Aku bangga sama kamu 💞",
+                "Istirahatlah sejenak 💖"
+            ];
+            feedbackText.innerText = messages[Math.floor(Math.random() * messages.length)];
+            feedbackText.classList.add('show');
+            
+            // Micro-interaction: Orb reaction
+            orbTrigger.style.transform = "scale(1.1)";
+            setTimeout(() => {
+                orbTrigger.style.transform = "scale(1)";
+                setTimeout(() => { 
+                    feedbackText.classList.remove('show');
+                }, 2500);
+            }, 200);
+        }
+
+        window.deleteLog = function(id) {
+            let logs = getLogs();
+            logs = logs.filter(l => l.id !== id);
+            saveLogs(logs);
+            renderHistory();
+        };
+
+        function renderHistory() {
+            const logs = getLogs();
+            logContainer.innerHTML = logs.length 
+                ? logs.map(l => `
+                    <div class="log-item">
+                        <span class="delete-item" onclick="deleteLog(${l.id})">×</span>
+                        <span class="log-date">${l.date}</span>
+                        <div class="log-text">${escapeHTML(l.text)}</div>
+                    </div>
+                `).join('')
+                : '<div style="text-align:center; padding-top: 50px; color:var(--text-dim)">Belum ada pesan cinta untuk dirimu...</div>';
+        }
+
+        // Input Focus/Blur Handler
+        input.addEventListener('focus', () => {
+            statusText.classList.add('fade-out');
+            orbTrigger.classList.add('input-active');
+        });
+
+        input.addEventListener('blur', () => {
+            statusText.classList.remove('fade-out');
+            orbTrigger.classList.remove('input-active');
+        });
+
+        // Event Listeners
+        orbTrigger.addEventListener('click', toggleZenAudio);
+        btnZen.addEventListener('click', toggleZenAudio);
+        btnSave.addEventListener('click', saveToLog);
+        btnHistory.addEventListener('click', () => { renderHistory(); logOverlay.style.display = 'block'; });
+        btnClearAll.addEventListener('click', () => { if(confirm("Hapus semua memori?")) { saveLogs([]); renderHistory(); } });
+        closeHistory.addEventListener('click', () => { logOverlay.style.display = 'none'; });
+
+        // Mobile Friendly: Enter to save
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                saveToLog();
+            }
+        });
+
+        // Breathing cycle text
+        setInterval(() => {
+            if (isZenActive) {
+                statusText.innerText = statusText.innerText === "Tarik Napas..." ? "Hembuskan..." : "Tarik Napas...";
+            }
+        }, 4000);
+
+        // Intro Animation on load
+        window.onload = () => {
+            setTimeout(() => {
+                mainUi.classList.add('ready');
+            }, 1000); // 1s delay then 1s transition via CSS
+        };
+    </script>
+</body>
+</html>
