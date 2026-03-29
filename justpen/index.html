@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0>
     <title>Justpen - Membuat Coretan</title>
     <style>
         :root {
@@ -44,7 +44,7 @@
         #canvas-wrapper {
             flex: 1;
             background-color: var(--paper);
-            padding-bottom: calc(120px + env(safe-area-inset-bottom));
+            margin-bottom: 0;
             position: relative;
             cursor: crosshair;
             overflow: hidden;
@@ -56,6 +56,10 @@
 
         /* Toolbar Modern */
         #toolbar {
+            position: fixed;
+            bottom: env(safe-area-inset-bottom);
+            left: 0;
+            width: 100%;
             height: 100px;
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
