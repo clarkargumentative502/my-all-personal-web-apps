@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZakatPad</title>
+    <style>
+        :root {
+            --bg: #ffffff;
+            --text-main: #37352f;
+            --text-sub: #787774;
+            --border: #ededed;
+            --accent: #2383e2;
+            --accent-soft: #ebf5fe;
+            --success: #0f7b6c;
+            --success-bg: #e6f3f1;
+            --card-bg: #f7f6f3;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            margin: 0;
+            line-height: 1.5;
+            display: flex;
+            justify-content: center;
+        }
+
+        #app {
+            width: 100%;
+            max-width: 500px;
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+
+        header {
+            margin-bottom: 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin: 0 0 4px 0;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            color: var(--text-sub);
+            font-size: 14px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+            margin-bottom: 24px;
+            scrollbar-width: none;
+        }
+        .tabs::-webkit-scrollbar { display: none; }
+
+        .tab-btn {
+            background: none;
+            border: 1px solid var(--border);
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            color: var(--text-sub);
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            background: var(--card-bg);
+            color: var(--text-main);
+            border-color: var(--text-main);
+            font-weight: 500;
+        }
+
+        .card {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .field {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-sub);
+            text-transform: uppercase;
+            margin-bottom: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px 0;
+            font-size: 18px;
+            border: none;
+            border-bottom: 1px solid var(--border);
+            outline: none;
+            color: var(--text-main);
+            background: transparent;
+            transition: border-color 0.2s;
+        }
+
+        input:focus {
+            border-bottom-color: var(--accent);
+        }
+
+        .info-box {
+            background: var(--card-bg);
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            color: var(--text-sub);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .result-panel {
+            background: var(--success-bg);
+            border-radius: 8px;
+            padding: 24px;
+            text-align: center;
+        }
+
+        .result-label {
+            font-size: 13px;
+            color: var(--success);
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .result-value {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--success);
+            margin-bottom: 16px;
+        }
+
+        .btn-action {
+            width: 100%;
+            padding: 12px;
+            border-radius: 6px;
+            border: none;
+            background: var(--text-main);
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .btn-action:active {
+            opacity: 0.8;
+        }
+
+        .btn-outline {
+            background: none;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+        }
+
+        .hidden { display: none; }
+        
+        .status-pill {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .pill-wajib { background: #ffe2dd; color: #d44c47; }
+        .pill-sunnah { background: #ddebf1; color: #2d7eb8; }
+
+        .sync-status {
+            font-size: 10px;
+            text-align: center;
+            margin-top: 20px;
+            color: var(--text-sub);
+        }
+
+        .settings-toggle {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            color: var(--text-sub);
+        }
+    </style>
+</head>
+<body>
+
+<div id="app">
+    <header>
+        <div>
+            <h1>ZakatPad</h1>
+            <div class="subtitle">Kalkulator Zakat Pribadi Anda</div>
+        </div>
+        <button class="settings-toggle" onclick="toggleSettings()" aria-label="Buka Pengaturan Harga">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        </button>
+    </header>
+
+    <div id="settings-area" class="card hidden">
+        <label>Pengaturan Harga Referensi</label>
+        <div class="field">
+            <label>Harga Emas per Gram (Rp)</label>
+            <input type="number" id="set_emas" min="0" oninput="updateGlobalPrices()">
+        </div>
+        <div class="field">
+            <label>Harga Beras per Kg/L (Rp)</label>
+            <input type="number" id="set_beras" min="0" oninput="updateGlobalPrices()">
+        </div>
+        <button class="btn-action btn-outline" onclick="toggleSettings()">Selesai</button>
+    </div>
+
+    <div class="tabs" id="tabs" role="tablist">
+        <button class="tab-btn active" role="tab" onclick="switchTab('fitrah')">Fitrah</button>
+        <button class="tab-btn" role="tab" onclick="switchTab('profesi')">Profesi</button>
+        <button class="tab-btn" role="tab" onclick="switchTab('maal')">Maal</button>
+        <button class="tab-btn" role="tab" onclick="switchTab('sedekah')">Sedekah</button>
+    </div>
+
+    <main id="content">
+        <!-- Content injected by JS -->
+    </main>
+
+    <div id="result-container" class="hidden" aria-live="polite">
+        <div class="result-panel">
+            <div id="status-tag"></div>
+            <div class="result-label" id="res-label">Estimasi Zakat</div>
+            <div class="result-value" id="res-total">Rp 0</div>
+            <button class="btn-action" onclick="copyResult(event)">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                Salin Ringkasan
+            </button>
+        </div>
+    </div>
+
+    <div class="sync-status" id="sync-info"></div>
+</div>
+
+<script>
+    // --- STATIC ASSETS ---
+    const ICONS = {
+        info: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>`,
+        sparkles: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.91 5.81L20 10.7l-5.09 1.89L13.91 21 12 15.19 10.09 21 9.09 12.59 4 10.7l6.09-1.89z"></path></svg>`
+    };
+
+    // --- STATE & DATA ---
+    let state = {
+        activeTab: 'fitrah',
+        hargaEmas: 1350000,
+        hargaBeras: 15000,
+        satuanFitrah: 'kg'
+    };
+
+    const calculationMap = {
+        fitrah: calcFitrah,
+        profesi: calcProfesi,
+        maal: calcMaal,
+        sedekah: calcSedekah
+    };
+
+    // --- INITIALIZATION ---
+    window.onload = () => {
+        loadSettings();
+        switchTab('fitrah');
+    };
+
+    function loadSettings() {
+        const saved = localStorage.getItem('zakatpad_v3_settings');
+        if (saved) {
+            state = {...state, ...JSON.parse(saved)};
+        }
+        document.getElementById('set_emas').value = state.hargaEmas;
+        document.getElementById('set_beras').value = state.hargaBeras;
+        updateSyncUI();
+    }
+
+    function updateGlobalPrices() {
+        state.hargaEmas = parseFloat(document.getElementById('set_emas').value) || 0;
+        state.hargaBeras = parseFloat(document.getElementById('set_beras').value) || 0;
+        saveSettings();
+        updateSyncUI();
+        if (!document.getElementById('result-container').classList.contains('hidden')) {
+            calculationMap[state.activeTab]();
+        }
+    }
+
+    function saveSettings() {
+        localStorage.setItem('zakatpad_v3_settings', JSON.stringify(state));
+    }
+
+    function updateSyncUI() {
+        document.getElementById('sync-info').innerText = `Harga Ref: Emas Rp ${state.hargaEmas.toLocaleString()} | Beras Rp ${state.hargaBeras.toLocaleString()}`;
+    }
+
+    function toggleSettings() {
+        const area = document.getElementById('settings-area');
+        area.classList.toggle('hidden');
+    }
+
+    // --- NAVIGATION ---
+    function switchTab(tabId) {
+        state.activeTab = tabId;
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.innerText.toLowerCase().includes(tabId.substring(0,3)));
+        });
+        renderForm();
+        hideResult();
+        // Trigger calculation in case there's saved data or defaults
+        calculationMap[tabId]();
+    }
+
+    // --- RENDERING ---
+    function renderForm() {
+        const container = document.getElementById('content');
+        let html = '';
+
+        switch(state.activeTab) {
+            case 'fitrah':
+                html = `
+                    <div class="card">
+                        <div class="field">
+                            <label for="f_jiwa">Jumlah Jiwa</label>
+                            <input type="number" id="f_jiwa" min="0" placeholder="0" oninput="calcFitrah()">
+                        </div>
+                        <div class="field">
+                            <label for="f_unit">Satuan Pembayaran</label>
+                            <select id="f_unit" onchange="state.satuanFitrah = this.value; calcFitrah()">
+                                <option value="kg" ${state.satuanFitrah === 'kg' ? 'selected' : ''}>Kilogram (2.5Kg)</option>
+                                <option value="liter" ${state.satuanFitrah === 'liter' ? 'selected' : ''}>Liter (3.5L)</option>
+                            </select>
+                        </div>
+                        <div class="info-box">
+                            ${ICONS.info}
+                            <span>Zakat Fitrah wajib ditunaikan sebelum Idul Fitri.</span>
+                        </div>
+                    </div>
+                `;
+                break;
+            case 'profesi':
+                const nisabProfesi = Math.round(522 * state.hargaBeras);
+                html = `
+                    <div class="card">
+                        <div class="field">
+                            <label for="p_income">Pendapatan Bulanan (Rp)</label>
+                            <input type="number" id="p_income" min="0" placeholder="0" oninput="calcProfesi()">
+                        </div>
+                        <div class="field">
+                            <label for="p_bonus">Bonus & Pendapatan Lain (Rp)</label>
+                            <input type="number" id="p_bonus" min="0" placeholder="0" oninput="calcProfesi()">
+                        </div>
+                        <div class="info-box">
+                            ${ICONS.info}
+                            <span>Nisab bulanan: Rp ${nisabProfesi.toLocaleString()} (522kg beras).</span>
+                        </div>
+                    </div>
+                `;
+                break;
+            case 'maal':
+                const nisabMaal = Math.round(85 * state.hargaEmas);
+                html = `
+                    <div class="card">
+                        <div class="field">
+                            <label for="m_harta">Aset (Tabungan/Emas/Saham)</label>
+                            <input type="number" id="m_harta" min="0" placeholder="0" oninput="calcMaal()">
+                        </div>
+                        <div class="field">
+                            <label for="m_hutang">Hutang Jatuh Tempo</label>
+                            <input type="number" id="m_hutang" min="0" placeholder="0" oninput="calcMaal()">
+                        </div>
+                        <div class="info-box">
+                            ${ICONS.info}
+                            <span>Nisab Maal: Rp ${nisabMaal.toLocaleString()} (85g emas).</span>
+                        </div>
+                    </div>
+                `;
+                break;
+            case 'sedekah':
+                html = `
+                    <div class="card">
+                        <div class="field">
+                            <label for="s_amount">Nominal Sedekah</label>
+                            <input type="number" id="s_amount" min="0" placeholder="0" oninput="calcSedekah()">
+                        </div>
+                        <div class="info-box">
+                            ${ICONS.sparkles}
+                            <span>Sedekah sunnah dan tidak dibatasi nisab.</span>
+                        </div>
+                    </div>
+                `;
+                break;
+        }
+        container.innerHTML = html;
+    }
+
+    // --- CALCULATIONS ---
+    function showResult(value, isWajib = true) {
+        const container = document.getElementById('result-container');
+        const totalEl = document.getElementById('res-total');
+        const tagEl = document.getElementById('status-tag');
+        
+        container.classList.remove('hidden');
+        totalEl.innerText = `Rp ${Math.round(value).toLocaleString()}`;
+        
+        if (value > 0) {
+            tagEl.innerHTML = isWajib 
+                ? '<span class="status-pill pill-wajib">WAJIB</span>' 
+                : '<span class="status-pill pill-sunnah">SUNNAH</span>';
+        } else {
+            tagEl.innerHTML = '<span class="status-pill" style="background:#eee">DI BAWAH NISAB</span>';
+        }
+    }
+
+    function hideResult() {
+        document.getElementById('result-container').classList.add('hidden');
+    }
+
+    function calcFitrah() {
+        const el = document.getElementById('f_jiwa');
+        if (!el) return;
+        const jiwa = parseFloat(el.value) || 0;
+        const multiplier = state.satuanFitrah === 'kg' ? 2.5 : 3.5;
+        if (jiwa > 0) showResult(jiwa * multiplier * state.hargaBeras); else hideResult();
+    }
+
+    function calcProfesi() {
+        const incomeEl = document.getElementById('p_income');
+        if (!incomeEl) return;
+        const income = parseFloat(incomeEl.value) || 0;
+        const bonus = parseFloat(document.getElementById('p_bonus').value) || 0;
+        const total = income + bonus;
+        const nisab = 522 * state.hargaBeras;
+        if (total >= nisab) showResult(total * 0.025);
+        else if (total > 0) showResult(0);
+        else hideResult();
+    }
+
+    function calcMaal() {
+        const hartaEl = document.getElementById('m_harta');
+        if (!hartaEl) return;
+        const harta = parseFloat(hartaEl.value) || 0;
+        const hutang = parseFloat(document.getElementById('m_hutang').value) || 0;
+        const bersih = harta - hutang;
+        const nisab = 85 * state.hargaEmas;
+        if (bersih >= nisab) showResult(bersih * 0.025);
+        else if (harta > 0) showResult(0);
+        else hideResult();
+    }
+
+    function calcSedekah() {
+        const el = document.getElementById('s_amount');
+        if (!el) return;
+        const amount = parseFloat(el.value) || 0;
+        if (amount > 0) showResult(amount, false); else hideResult();
+    }
+
+    // --- CLIPBOARD ---
+    function copyResult(event) {
+        const total = document.getElementById('res-total').innerText;
+        const type = state.activeTab.toUpperCase();
+        const text = `ZakatPad Report\nJenis: ${type}\nTotal: ${total}\nSemoga Berkah.`;
+        
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        document.body.appendChild(textArea);
+        textArea.select();
+        try {
+            document.execCommand('copy');
+            const btn = event.currentTarget;
+            const original = btn.innerHTML;
+            btn.innerText = "Tersalin!";
+            setTimeout(() => btn.innerHTML = original, 1500);
+        } catch (err) { console.error('Gagal menyalin:', err); }
+        document.body.removeChild(textArea);
+    }
+</script>
+
+</body>
+</html>
